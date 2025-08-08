@@ -45,26 +45,28 @@ posts: list[dict[str, object]] = [
     },
 ]
 
-# Create your views here.
+posts_with_id = {int(post['id']): post for post in posts}
 
 
 def index(request: HttpRequest) -> HttpResponse:
     """Обработка главной страницы и ленты публикаций."""
-    template_name: str = 'blog/index.html'
-    context = {'posts': posts}
+    template_name = 'blog/index.html'
+    reversed_posts = sorted(posts_with_id.keys(), reverse=True)
+    sorted_posts = [posts_with_id[post_id] for post_id in reversed_posts]
+    context = {'posts': sorted_posts}
     return render(request, template_name, context)
 
 
 def post_detail(request: HttpRequest, id: int) -> HttpResponse:
     """Полный текст поста."""
     template_name: str = 'blog/detail.html'
-    post = posts[id]
+    post = posts[id] 
     return render(request, template_name, {'post': post})
 
 
 def category_posts(request: HttpRequest, category_slug: str) -> HttpResponse:
     """Поиск по категории."""
-    template_name: str = 'blog/category.html'
+    template_name = 'blog/category.html'
     context = {
         'category_slug': category_slug
     }
