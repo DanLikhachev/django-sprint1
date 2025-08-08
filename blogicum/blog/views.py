@@ -60,7 +60,7 @@ def index(request: HttpRequest) -> HttpResponse:
 def post_detail(request: HttpRequest, id: int) -> HttpResponse:
     """Полный текст поста."""
     template_name: str = 'blog/detail.html'
-    post = posts[id] 
+    post = posts[id]
     return render(request, template_name, {'post': post})
 
 
