@@ -45,23 +45,29 @@ posts: list[dict[str, object]] = [
     },
 ]
 
-posts_with_id = {int(post['id']): post for post in posts}
+posts_with_id = {post['id']: post for post in posts}
 
 
 def index(request: HttpRequest) -> HttpResponse:
     """Обработка главной страницы и ленты публикаций."""
     template_name = 'blog/index.html'
-    reversed_posts = sorted(posts_with_id.keys(), reverse=True)
-    sorted_posts = [posts_with_id[post_id] for post_id in reversed_posts]
-    context = {'posts': sorted_posts}
+    sorted_posts = sorted(
+        posts,
+        key=lambda post: post['id'],
+        reverse=True
+    )
+    context: dict(str, any) = {'posts': sorted_posts}
     return render(request, template_name, context)
 
 
 def post_detail(request: HttpRequest, id: int) -> HttpResponse:
     """Полный текст поста."""
-    template_name: str = 'blog/detail.html'
-    post = posts[id]
-    return render(request, template_name, {'post': post})
+    try:
+        template_name = 'blog/detail.html'
+        post = posts_with_id[id]
+        return render(request, template_name, {'post': post})
+    except KeyError:
+        return HttpResponse('Страница не найдена', status=404)
 
 
 def category_posts(request: HttpRequest, category_slug: str) -> HttpResponse:
